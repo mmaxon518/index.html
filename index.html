@@ -5,24 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fire Ground Risk Profile</title>
   <style>
-    :root { --border:#e6e6e6; --muted:#666; }
+    :root {
+      --border:#e6e6e6;
+      --muted:#666;
+      --green:#16a34a;
+      --yellow:#ca8a04;
+      --red:#dc2626;
+      --btn-bg:#f7f7f7;
+      --btn-bg-hover:#efefef;
+      --btn-selected:#e8f0ff;
+      --btn-selected-border:#3b82f6;
+    }
+
     body { font-family: Arial, sans-serif; margin: 24px; max-width: 980px; line-height: 1.35; }
     h1 { margin: 0 0 6px; }
     .muted { color: var(--muted); margin: 0 0 18px; }
+
     .card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 14px 0; background: #fff; }
     .scorebar { position: sticky; top: 12px; z-index: 5; background: #fafafa; }
+
     .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
     .pill { display:inline-block; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background:#fff; }
+
     .score { font-size: 1.6rem; font-weight: 700; }
-    .qtitle { font-size: 1.08rem; font-weight: 700; margin: 0 0 8px; }
-    label { display: block; margin: 8px 0; cursor: pointer; }
-    input[type="radio"], input[type="checkbox"] { transform: translateY(1px); }
+
+    /* Score color states */
+    #totalScore.score-green { color: var(--green); }
+    #totalScore.score-yellow { color: var(--yellow); }
+    #totalScore.score-red { color: var(--red); }
+
+    .qtitle { font-size: 1.08rem; font-weight: 700; margin: 0 0 10px; }
+
     button { padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: #fff; cursor: pointer; }
     button:hover { background: #f3f3f3; }
-    .small { font-size: 0.95rem; color: var(--muted); }
+
     .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
     @media (min-width: 860px) {
       .grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Button-style answers */
+    .options { display: grid; gap: 10px; }
+    .option input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+    }
+    .option label {
+      display: block;
+      padding: 12px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--btn-bg);
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+      transition: background 120ms ease, transform 80ms ease, border-color 120ms ease;
+    }
+    .option label:hover { background: var(--btn-bg-hover); }
+    .option input:checked + label{
+      background: var(--btn-selected);
+      border-color: var(--btn-selected-border);
+      transform: translateY(-1px);
+    }
+    .option input:focus + label{
+      outline: 2px solid rgba(59,130,246,0.35);
+      outline-offset: 2px;
     }
   </style>
 </head>
@@ -34,100 +84,120 @@
   <!-- Score Bar -->
   <div class="card scorebar">
     <div class="row">
-      <div class="score">Total Score: <span id="totalScore">0</span></div>
+      <div class="score">Total Score: <span id="totalScore" class="score-green">0</span></div>
       <span class="pill">Answered: <span id="answeredCount">0</span>/9</span>
       <button id="resetBtn" type="button">Reset</button>
     </div>
-    <div class="small">Note: Scoring rules are based on the point values assigned to selected options.</div>
   </div>
 
   <div class="grid">
     <!-- Q1 -->
     <div class="card question" data-question="q1">
       <div class="qtitle">1) What is the type of the building?</div>
-      <label><input type="radio" name="q1" value="1"> Type 1 Fire-Resistive (1)</label>
-      <label><input type="radio" name="q1" value="2"> Type II Non-Combustible (2)</label>
-      <label><input type="radio" name="q1" value="3"> Type III Ordinary (3)</label>
-      <label><input type="radio" name="q1" value="4"> Type IV (4)</label>
-      <label><input type="radio" name="q1" value="5"> Type V Wood Frame (5)</label>
+      <div class="options">
+        <div class="option"><input type="radio" id="q1a1" name="q1" value="1"><label for="q1a1">Type 1 Fire-Resistive</label></div>
+        <div class="option"><input type="radio" id="q1a2" name="q1" value="2"><label for="q1a2">Type II Non-Combustible</label></div>
+        <div class="option"><input type="radio" id="q1a3" name="q1" value="3"><label for="q1a3">Type III Ordinary</label></div>
+        <div class="option"><input type="radio" id="q1a4" name="q1" value="4"><label for="q1a4">Type IV</label></div>
+        <div class="option"><input type="radio" id="q1a5" name="q1" value="5"><label for="q1a5">Type V Wood Frame</label></div>
+      </div>
     </div>
 
-<!-- Q2 -->
-<div class="card question" data-question="q2">
-  <div class="qtitle">2) What is the Occupancy use?</div>
-  <label><input type="radio" name="q2" value="3"> Residential (3)</label>
-  <label><input type="radio" name="q2" value="1"> Commercial after hours (1)</label>
-  <label><input type="radio" name="q2" value="2"> Commercial business hours (2)</label>
-  <label><input type="radio" name="q2" value="4"> Multifamily (4)</label>
-  <label><input type="radio" name="q2" value="5"> Mixed use (5)</label>
-</div>    
+    <!-- Q2 -->
+    <div class="card question" data-question="q2">
+      <div class="qtitle">2) What is the Occupancy use?</div>
+      <div class="options">
+        <div class="option"><input type="radio" id="q2a1" name="q2" value="3"><label for="q2a1">Residential</label></div>
+        <div class="option"><input type="radio" id="q2a2" name="q2" value="1"><label for="q2a2">Commercial after hours</label></div>
+        <div class="option"><input type="radio" id="q2a3" name="q2" value="2"><label for="q2a3">Commercial business hours</label></div>
+        <div class="option"><input type="radio" id="q2a4" name="q2" value="4"><label for="q2a4">Multifamily</label></div>
+        <div class="option"><input type="radio" id="q2a5" name="q2" value="5"><label for="q2a5">Mixed use</label></div>
+      </div>
+    </div>
 
-  <!-- Q3 -->
-<div class="card question" data-question="q3">
-  <div class="qtitle">3) What is the Occupancy Arrangement?</div>
-  <label><input type="radio" name="q3" value="1"> Normal (1)</label>
-  <label><input type="radio" name="q3" value="2"> Abnormal (2)</label>
-  <label><input type="radio" name="q3" value="3"> Difficult (3)</label>
-</div>  
+    <!-- Q3 -->
+    <div class="card question" data-question="q3">
+      <div class="qtitle">3) What is the Occupancy Arrangement?</div>
+      <div class="options">
+        <div class="option"><input type="radio" id="q3a1" name="q3" value="1"><label for="q3a1">Normal</label></div>
+        <div class="option"><input type="radio" id="q3a2" name="q3" value="2"><label for="q3a2">Abnormal</label></div>
+        <div class="option"><input type="radio" id="q3a3" name="q3" value="3"><label for="q3a3">Difficult</label></div>
+      </div>
+    </div>
 
-   <!-- Q4 -->
-<div class="card question" data-question="q4">
-  <div class="qtitle">4) What are the Fire Conditions?</div>
-  <label><input type="radio" name="q4" value="1"> Nothing showing (1)</label>
-  <label><input type="radio" name="q4" value="2"> Light smoke (2)</label>
-  <label><input type="radio" name="q4" value="3"> Heavy smoke (3)</label>
-  <label><input type="radio" name="q4" value="4"> Smoke and some fire (4)</label>
-  <label><input type="radio" name="q4" value="5"> Heavy fire (5)</label>
-  <label><input type="radio" name="q4" value="6"> Defensive operations (6)</label>
-</div> 
+    <!-- Q4 -->
+    <div class="card question" data-question="q4">
+      <div class="qtitle">4) What are the Fire Conditions?</div>
+      <div class="options">
+        <div class="option"><input type="radio" id="q4a1" name="q4" value="1"><label for="q4a1">Nothing showing</label></div>
+        <div class="option"><input type="radio" id="q4a2" name="q4" value="2"><label for="q4a2">Light smoke</label></div>
+        <div class="option"><input type="radio" id="q4a3" name="q4" value="3"><label for="q4a3">Heavy smoke</label></div>
+        <div class="option"><input type="radio" id="q4a4" name="q4" value="4"><label for="q4a4">Smoke and some fire</label></div>
+        <div class="option"><input type="radio" id="q4a5" name="q4" value="5"><label for="q4a5">Heavy fire</label></div>
+        <div class="option"><input type="radio" id="q4a6" name="q4" value="6"><label for="q4a6">Defensive operations</label></div>
+      </div>
+    </div>
 
-   <!-- Q5 -->
-<div class="card question" data-question="q5">
-  <div class="qtitle">5) What are the Life Hazards?</div>
-  <label><input type="radio" name="q5" value="1"> Low probability (1)</label>
-  <label><input type="radio" name="q5" value="2"> Medium probability (2)</label>
-  <label><input type="radio" name="q5" value="3"> High probability (3)</label>
-</div> 
+    <!-- Q5 -->
+    <div class="card question" data-question="q5">
+      <div class="qtitle">5) What are the Life Hazards?</div>
+      <div class="options">
+        <div class="option"><input type="radio" id="q5a1" name="q5" value="1"><label for="q5a1">Low probability</label></div>
+        <div class="option"><input type="radio" id="q5a2" name="q5" value="2"><label for="q5a2">Medium probability</label></div>
+        <div class="option"><input type="radio" id="q5a3" name="q5" value="3"><label for="q5a3">High probability</label></div>
+      </div>
+    </div>
 
-  <!-- Q6 -->
-<div class="card question" data-question="q6">
-  <div class="qtitle">6) What are the Smoke Conditions?</div>
-  <label><input type="radio" name="q6" value="1"> No smoke (1)</label>
-  <label><input type="radio" name="q6" value="2"> Light smoke (2)</label>
-  <label><input type="radio" name="q6" value="3"> Heavy smoke (3)</label>
-</div>  
+    <!-- Q6 -->
+    <div class="card question" data-question="q6">
+      <div class="qtitle">6) What are the Smoke Conditions?</div>
+      <div class="options">
+        <div class="option"><input type="radio" id="q6a1" name="q6" value="1"><label for="q6a1">No smoke</label></div>
+        <div class="option"><input type="radio" id="q6a2" name="q6" value="2"><label for="q6a2">Light smoke</label></div>
+        <div class="option"><input type="radio" id="q6a3" name="q6" value="3"><label for="q6a3">Heavy smoke</label></div>
+      </div>
+    </div>
 
-  <!-- Q7 -->
-<div class="card question" data-question="q7">
-  <div class="qtitle">7) What resources are available?</div>
-  <label><input type="radio" name="q7" value="1"> Full alarm (1)</label>
-  <label><input type="radio" name="q7" value="2"> Limited resources (2)</label>
-  <label><input type="radio" name="q7" value="3"> Delayed or mutual aid (3)</label>
-</div> 
+    <!-- Q7 -->
+    <div class="card question" data-question="q7">
+      <div class="qtitle">7) What resources are available?</div>
+      <div class="options">
+        <div class="option"><input type="radio" id="q7a1" name="q7" value="1"><label for="q7a1">Full alarm</label></div>
+        <div class="option"><input type="radio" id="q7a2" name="q7" value="2"><label for="q7a2">Limited resources</label></div>
+        <div class="option"><input type="radio" id="q7a3" name="q7" value="3"><label for="q7a3">Delayed or mutual aid</label></div>
+      </div>
+    </div>
 
- <!-- Q8 -->
-<div class="card question" data-question="q8">
-  <div class="qtitle">8) What actions are needed?</div>
-  <label><input type="radio" name="q8" value="1"> Can use current resources (1)</label>
-  <label><input type="radio" name="q8" value="2"> Need special resources from city (2)</label>
-  <label><input type="radio" name="q8" value="3"> Need special resources from mutual aid (3)</label>
-</div>   
+    <!-- Q8 -->
+    <div class="card question" data-question="q8">
+      <div class="qtitle">8) What actions are needed?</div>
+      <div class="options">
+        <div class="option"><input type="radio" id="q8a1" name="q8" value="1"><label for="q8a1">Can use current resources</label></div>
+        <div class="option"><input type="radio" id="q8a2" name="q8" value="2"><label for="q8a2">Need special resources from city</label></div>
+        <div class="option"><input type="radio" id="q8a3" name="q8" value="3"><label for="q8a3">Need special resources from mutual aid</label></div>
+      </div>
+    </div>
 
- <!-- Q9 -->
-<div class="card question" data-question="q9">
-  <div class="qtitle">9) What are the weather conditions?</div>
-  <label><input type="radio" name="q9" value="1"> Normal weather (1)</label>
-  <label><input type="radio" name="q9" value="2"> Outside of normal conditions (2)</label>
-  <label><input type="radio" name="q9" value="3"> Extreme weather conditions (3)</label>
-</div>
+    <!-- Q9 -->
+    <div class="card question" data-question="q9">
+      <div class="qtitle">9) What are the weather conditions?</div>
+      <div class="options">
+        <div class="option"><input type="radio" id="q9a1" name="q9" value="1"><label for="q9a1">Normal weather</label></div>
+        <div class="option"><input type="radio" id="q9a2" name="q9" value="2"><label for="q9a2">Outside of normal conditions</label></div>
+        <div class="option"><input type="radio" id="q9a3" name="q9" value="3"><label for="q9a3">Extreme weather conditions</label></div>
+      </div>
+    </div>
   </div>
 
   <script>
     // --- Scoring Engine (works for both radio and checkbox questions) ---
     const TOTAL_QUESTIONS = 9;
 
+    // Color scale bounds (per your request)
+    const MIN_SCORE = 9;
+    const MAX_SCORE = 34;
+
     function getQuestionScore(qName) {
-      // Sum checked values for checkboxes; single value for radios.
       const checked = document.querySelectorAll(`input[name="${qName}"]:checked`);
       let sum = 0;
       checked.forEach(el => sum += Number(el.value || 0));
@@ -136,6 +206,19 @@
 
     function isQuestionAnswered(qName) {
       return document.querySelector(`input[name="${qName}"]:checked`) !== null;
+    }
+
+    // Split into thirds: bottom=green, middle=yellow, top=red
+    function scoreClass(score) {
+      // Clamp for partial / over-range states
+      const s = Math.max(MIN_SCORE, Math.min(MAX_SCORE, score));
+
+      const range = MAX_SCORE - MIN_SCORE; // 25
+      const third = range / 3;            // 8.333...
+
+      if (s <= MIN_SCORE + third) return "score-green";               // 9–17
+      if (s <= MIN_SCORE + (2 * third)) return "score-yellow";        // 18–26
+      return "score-red";                                             // 27–34
     }
 
     function recalc() {
@@ -148,7 +231,13 @@
         if (isQuestionAnswered(q)) answered += 1;
       }
 
-      document.getElementById("totalScore").textContent = String(total);
+      const totalEl = document.getElementById("totalScore");
+      totalEl.textContent = String(total);
+
+      // Update score color
+      totalEl.classList.remove("score-green", "score-yellow", "score-red");
+      totalEl.classList.add(scoreClass(total));
+
       document.getElementById("answeredCount").textContent = String(answered);
     }
 
