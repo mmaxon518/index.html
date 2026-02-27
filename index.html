@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fire Ground Risk Profile</title>
+  <style>
+    :root { --border:#e6e6e6; --muted:#666; }
+    body { font-family: Arial, sans-serif; margin: 24px; max-width: 980px; line-height: 1.35; }
+    h1 { margin: 0 0 6px; }
+    .muted { color: var(--muted); margin: 0 0 18px; }
+    .card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 14px 0; background: #fff; }
+    .scorebar { position: sticky; top: 12px; z-index: 5; background: #fafafa; }
+    .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+    .pill { display:inline-block; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background:#fff; }
+    .score { font-size: 1.6rem; font-weight: 700; }
+    .qtitle { font-size: 1.08rem; font-weight: 700; margin: 0 0 8px; }
+    label { display: block; margin: 8px 0; cursor: pointer; }
+    input[type="radio"], input[type="checkbox"] { transform: translateY(1px); }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: #fff; cursor: pointer; }
+    button:hover { background: #f3f3f3; }
+    .small { font-size: 0.95rem; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 860px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Fire Ground Risk Profile</h1>
+  <p class="muted">Select the best option for each question. The total score updates automatically.</p>
+
+  <!-- Score Bar -->
+  <div class="card scorebar">
+    <div class="row">
+      <div class="score">Total Score: <span id="totalScore">0</span></div>
+      <span class="pill">Answered: <span id="answeredCount">0</span>/9</span>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+    <div class="small">Note: Scoring rules are based on the point values assigned to selected options.</div>
+  </div>
+
+  <div class="grid">
+    <!-- Q1 -->
+    <div class="card question" data-question="q1">
+      <div class="qtitle">1) What is the type of the building?</div>
+      <label><input type="radio" name="q1" value="1"> Type 1 Fire-Resistive (1)</label>
+      <label><input type="radio" name="q1" value="2"> Type II Non-Combustible (2)</label>
+      <label><input type="radio" name="q1" value="3"> Type III Ordinary (3)</label>
+      <label><input type="radio" name="q1" value="4"> Type IV (4)</label>
+      <label><input type="radio" name="q1" value="5"> Type V Wood Frame (5)</label>
+    </div>
+
+    <!-- Q2 -->
+    <div class="card question" data-question="q2">
+      <div class="qtitle">2) What is the Occupancy use?</div>
+      <div class="small">Answers/points coming soon.</div>
+      <!-- Add radio or checkbox options later -->
+    </div>
+
+    <!-- Q3 -->
+    <div class="card question" data-question="q3">
+      <div class="qtitle">3) What is the Occupancy Arrangement?</div>
+      <div class="small">Answers/points coming soon.</div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="card question" data-question="q4">
+      <div class="qtitle">4) What are the Fire Conditions?</div>
+      <div class="small">Answers/points coming soon.</div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="card question" data-question="q5">
+      <div class="qtitle">5) What are the Life Hazards?</div>
+      <div class="small">Answers/points coming soon.</div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="card question" data-question="q6">
+      <div class="qtitle">6) What are the Smoke Conditions?</div>
+      <div class="small">Answers/points coming soon.</div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="card question" data-question="q7">
+      <div class="qtitle">7) What resources are available?</div>
+      <div class="small">Answers/points coming soon.</div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="card question" data-question="q8">
+      <div class="qtitle">8) What actions are needed?</div>
+      <div class="small">Answers/points coming soon.</div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="card question" data-question="q9">
+      <div class="qtitle">9) What are the weather conditions?</div>
+      <div class="small">Answers/points coming soon.</div>
+    </div>
+  </div>
+
+  <script>
+    // --- Scoring Engine (works for both radio and checkbox questions) ---
+    const TOTAL_QUESTIONS = 9;
+
+    function getQuestionScore(qName) {
+      // Sum checked values for checkboxes; single value for radios.
+      const checked = document.querySelectorAll(`input[name="${qName}"]:checked`);
+      let sum = 0;
+      checked.forEach(el => sum += Number(el.value || 0));
+      return sum;
+    }
+
+    function isQuestionAnswered(qName) {
+      return document.querySelector(`input[name="${qName}"]:checked`) !== null;
+    }
+
+    function recalc() {
+      let total = 0;
+      let answered = 0;
+
+      for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
+        const q = `q${i}`;
+        total += getQuestionScore(q);
+        if (isQuestionAnswered(q)) answered += 1;
+      }
+
+      document.getElementById("totalScore").textContent = String(total);
+      document.getElementById("answeredCount").textContent = String(answered);
+    }
+
+    function resetAll() {
+      document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => {
+        el.checked = false;
+      });
+      recalc();
+    }
+
+    document.addEventListener("change", (e) => {
+      if (e.target.matches('input[type="radio"], input[type="checkbox"]')) {
+        recalc();
+      }
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", resetAll);
+
+    // initial render
+    recalc();
+  </script>
+</body>
+</html>
